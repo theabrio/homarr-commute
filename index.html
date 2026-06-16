@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Commute Time</title>
+<style>
+  html, body { height: 100%; margin: 0; padding: 0; }
+  body { 
+    background-color: #ffffff; 
+    font-family: sans-serif; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+  }
+  .commute-box {
+    text-align: center;
+  }
+  .label {
+    font-size: 0.9rem;
+    color: #666666; 
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  /* Removed the hardcoded blue color here so JavaScript can control it */
+  #time {
+    font-size: 2.5rem;
+    font-weight: bold;
+    transition: color 0.5s ease; /* Adds a smooth fade when the color updates */
+  }
+</style>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE"></script>
+</head>
+<body>
+
+<div class="commute-box">
+  <div class="label">Pike to Seaport</div>
+  <div id="time" style="color: #1217A6;">Loading...</div> </div>
+
+<script>
+  function calculateCommute() {
+    const service = new google.maps.DistanceMatrixService();
+    service.getDistanceMatrix({
+      origins: ['885 Centre St, Newton, MA 02459'],
+      destinations: ['333 Summer St, Boston, MA 02210'],
+      travelMode: 'DRIVING',
+      drivingOptions: {
+        departureTime: new Date(),  
+        trafficModel: 'bestguess'
+      }
+    }, callback);
+  }
+
+  function callback(response, status) {
+    if (status === 'OK') {
+      const results = response.rows[0].elements[0];
+      
+      // Grabs the display text (e.g., "25 mins")
+      const trafficText = results.duration_in_traffic ? results.duration_in_traffic.text : results.duration.text;
+      
+      // Grabs the raw value in SECONDS to do accurate math
+      const trafficSeconds = results.duration_in_traffic ? results.duration_in_traffic.value : results.duration.value;
+      const trafficMinutes = Math.round(trafficSeconds / 60);
+
+      const timeElement = document.getElementById('time');
+
+      // Google's official traffic color hex codes applied to your logic
+      if (trafficMinutes <= 19) {
+        timeElement.style.color = '#188038'; // Google Green
+      } else if (trafficMinutes >= 20 && trafficMinutes <= 29) {
+        timeElement.style.color = '#F4B400'; // Google Yellow
+      } else {
+        timeElement.style.color = '#D93025'; // Google Red
+      }
+
+      timeElement.innerHTML = `🚗 ${trafficText}`;
+    } else {
+      document.getElementById('time').innerHTML = "Error";
+      document.getElementById('time').style.color = '#000000';
+    }
+  }
+
+  window.onload = calculateCommute;
+  setInterval(calculateCommute, 300000);
+</script>
+
+</body>
+</html>
