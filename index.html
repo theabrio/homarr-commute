@@ -22,20 +22,21 @@
     letter-spacing: 1px;
     margin-bottom: 8px;
   }
-  /* Removed the hardcoded blue color here so JavaScript can control it */
   #time {
     font-size: 2.5rem;
     font-weight: bold;
-    transition: color 0.5s ease; /* Adds a smooth fade when the color updates */
+    transition: color 0.5s ease;
   }
 </style>
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxAnG5zBjXI3ZEIPzPtLhs-mST44mjUOA"></script>
 </head>
 <body>
 
 <div class="commute-box">
-  <div class="label">BC Law to Seaport</div>
-  <div id="time" style="color: #1217A6;">Loading...</div> </div>
+  <div class="label">BC LAW TO SEAPORT</div>
+  <div id="time" style="color: #1217A6;">Loading...</div>
+</div>
 
 <script>
   function calculateCommute() {
@@ -54,26 +55,21 @@
   function callback(response, status) {
     if (status === 'OK') {
       const results = response.rows[0].elements[0];
-      
-      // Grabs the display text (e.g., "25 mins")
       const trafficText = results.duration_in_traffic ? results.duration_in_traffic.text : results.duration.text;
-      
-      // Grabs the raw value in SECONDS to do accurate math
       const trafficSeconds = results.duration_in_traffic ? results.duration_in_traffic.value : results.duration.value;
       const trafficMinutes = Math.round(trafficSeconds / 60);
 
       const timeElement = document.getElementById('time');
 
-      // Google's official traffic color hex codes applied to your logic
       if (trafficMinutes <= 19) {
-        timeElement.style.color = '#188038'; // Google Green
+        timeElement.style.color = '#188038'; 
       } else if (trafficMinutes >= 20 && trafficMinutes <= 29) {
-        timeElement.style.color = '#F4B400'; // Google Yellow
+        timeElement.style.color = '#F4B400'; 
       } else {
-        timeElement.style.color = '#D93025'; // Google Red
+        timeElement.style.color = '#D93025'; 
       }
 
-      timeElement.innerHTML = trafficText;
+      timeElement.innerHTML = trafficText; 
     } else {
       document.getElementById('time').innerHTML = "Error";
       document.getElementById('time').style.color = '#000000';
